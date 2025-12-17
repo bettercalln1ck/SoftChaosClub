@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useUserAuth } from '../context/UserAuthContext';
 import { usePaintings } from '../context/PaintingsContext';
 import type { Painting } from '../types';
 import './Admin.css';
 
 export const Admin: React.FC = () => {
   const { isAdmin, logout } = useAuth();
+  const { user: dbUser } = useUserAuth();
   const { paintings, addPainting, deletePainting } = usePaintings();
   const navigate = useNavigate();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -22,8 +24,42 @@ export const Admin: React.FC = () => {
     category: 'abstract' as Painting['category'],
   });
 
-  if (!isAdmin) {
+  // Check if user is logged in with database credentials AND is admin
+  const isDbAdmin = dbUser?.isAdmin === true;
+  
+  if (!isAdmin && !isDbAdmin) {
     return <Navigate to="/admin/login" replace />;
+  }
+  
+  // If only simple admin (no token), show warning
+  if (isAdmin && !isDbAdmin) {
+    return (
+      <div className="admin-dashboard">
+        <div className="admin-container">
+          <div style={{ padding: '40px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+            <h2>⚠️ Authentication Required</h2>
+            <p>To manage paintings, you need to login with database credentials.</p>
+            <p><strong>Please login with:</strong></p>
+            <ul style={{ textAlign: 'left', display: 'inline-block' }}>
+              <li>Email: admin@artgallery.com</li>
+              <li>Password: admin123</li>
+            </ul>
+            <div style={{ marginTop: '20px' }}>
+              <button 
+                onClick={() => {
+                  logout();
+                  navigate('/login');
+                }} 
+                className="btn-primary"
+                style={{ padding: '12px 24px', fontSize: '16px' }}
+              >
+                Go to Login Page
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const handleLogout = () => {
