@@ -257,7 +257,7 @@ export const Admin: React.FC = () => {
 
         <div className="paintings-list">
           {paintings.map(painting => (
-            <div key={painting.id} className="admin-painting-card">
+            <div key={painting._id} className="admin-painting-card">
               <div className="painting-thumbnail">
                 <img src={painting.image} alt={painting.title} />
               </div>
@@ -274,7 +274,7 @@ export const Admin: React.FC = () => {
               </div>
               <div className="painting-actions">
                 <button
-                  onClick={() => handleDelete(painting.id, painting.title)}
+                  onClick={() => handleDelete(painting._id, painting.title)}
                   className="btn-delete"
                 >
                   🗑️ Delete

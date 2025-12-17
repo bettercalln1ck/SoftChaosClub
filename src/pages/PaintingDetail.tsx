@@ -8,7 +8,7 @@ export const PaintingDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { paintings } = usePaintings();
   const { addToCart } = useCart();
-  const painting = paintings.find(p => p.id === Number(id));
+  const painting = paintings.find(p => p._id === id);
 
   if (!painting) {
     return (
@@ -24,7 +24,7 @@ export const PaintingDetail: React.FC = () => {
   }
 
   const relatedPaintings = paintings
-    .filter(p => p.category === painting.category && p.id !== painting.id)
+    .filter(p => p.category === painting.category && p._id !== painting._id)
     .slice(0, 3);
 
   return (
@@ -90,8 +90,8 @@ export const PaintingDetail: React.FC = () => {
             <div className="related-grid">
               {relatedPaintings.map(p => (
                 <Link 
-                  key={p.id} 
-                  to={`/painting/${p.id}`} 
+                  key={p._id} 
+                  to={`/painting/${p._id}`} 
                   className="related-card"
                   onClick={() => window.scrollTo(0, 0)}
                 >

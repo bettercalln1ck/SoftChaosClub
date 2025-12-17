@@ -68,7 +68,7 @@ export const Gallery: React.FC = () => {
       <div className="container">
         <div className="paintings-grid">
           {filteredPaintings.map(painting => (
-            <PaintingCard key={painting.id} painting={painting} />
+            <PaintingCard key={painting._id} painting={painting} />
           ))}
         </div>
 

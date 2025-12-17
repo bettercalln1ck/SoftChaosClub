@@ -17,7 +17,7 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({ painting }) => {
   };
 
   return (
-    <Link to={`/painting/${painting.id}`} className="painting-card">
+    <Link to={`/painting/${painting._id}`} className="painting-card">
       <div className="card-image-wrapper">
         <img 
           src={painting.image} 

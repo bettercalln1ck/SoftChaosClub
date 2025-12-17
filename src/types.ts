@@ -1,5 +1,5 @@
 export interface Painting {
-  id: string;
+  _id: string;
   title: string;
   artist: string;
   price: number;
@@ -9,6 +9,8 @@ export interface Painting {
   medium: string;
   year: number;
   category: 'abstract' | 'landscape' | 'portrait' | 'modern' | 'classical';
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CartItem extends Painting {

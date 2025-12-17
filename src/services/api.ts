@@ -79,21 +79,17 @@ export const paintingsAPI = {
     const response = await fetch(`${API_URL}/paintings`);
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-    // Convert MongoDB _id to id for frontend compatibility
-    return data.map((painting: any) => ({
-      ...painting,
-      id: painting._id,
-    }));
+    return data;
   },
 
   getById: async (id: string): Promise<Painting> => {
     const response = await fetch(`${API_URL}/paintings/${id}`);
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-    return { ...data, id: data._id };
+    return data;
   },
 
-  create: async (painting: Omit<Painting, 'id'>) => {
+  create: async (painting: Omit<Painting, '_id' | 'createdAt' | 'updatedAt'>) => {
     const response = await fetch(`${API_URL}/paintings`, {
       method: 'POST',
       headers: getHeaders(true),
@@ -101,10 +97,10 @@ export const paintingsAPI = {
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-    return { ...data, id: data._id };
+    return data;
   },
 
-  update: async (id: string, painting: Partial<Painting>) => {
+  update: async (id: string, painting: Omit<Painting, '_id' | 'createdAt' | 'updatedAt'>) => {
     const response = await fetch(`${API_URL}/paintings/${id}`, {
       method: 'PUT',
       headers: getHeaders(true),
@@ -112,7 +108,7 @@ export const paintingsAPI = {
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-    return { ...data, id: data._id };
+    return data;
   },
 
   delete: async (id: string) => {

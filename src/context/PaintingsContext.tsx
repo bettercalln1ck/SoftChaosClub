@@ -5,9 +5,9 @@ import { paintingsAPI } from '../services/api';
 
 interface PaintingsContextType {
   paintings: Painting[];
-  addPainting: (painting: Omit<Painting, 'id'>) => Promise<void>;
+  addPainting: (painting: Omit<Painting, '_id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   deletePainting: (id: string) => Promise<void>;
-  updatePainting: (id: string, painting: Omit<Painting, 'id'>) => Promise<void>;
+  updatePainting: (id: string, painting: Omit<Painting, '_id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   loading: boolean;
   error: string | null;
   refreshPaintings: () => Promise<void>;
@@ -38,7 +38,7 @@ export const PaintingsProvider: React.FC<{ children: ReactNode }> = ({ children 
     fetchPaintings();
   }, []);
 
-  const addPainting = async (painting: Omit<Painting, 'id'>) => {
+  const addPainting = async (painting: Omit<Painting, '_id' | 'createdAt' | 'updatedAt'>) => {
     try {
       const newPainting = await paintingsAPI.create(painting);
       setPaintings(prev => [...prev, newPainting]);
@@ -51,18 +51,18 @@ export const PaintingsProvider: React.FC<{ children: ReactNode }> = ({ children 
   const deletePainting = async (id: string) => {
     try {
       await paintingsAPI.delete(id);
-      setPaintings(prev => prev.filter(p => p.id !== id));
+      setPaintings(prev => prev.filter(p => p._id !== id));
     } catch (err) {
       console.error('Error deleting painting:', err);
       throw err;
     }
   };
 
-  const updatePainting = async (id: string, painting: Omit<Painting, 'id'>) => {
+  const updatePainting = async (id: string, painting: Omit<Painting, '_id' | 'createdAt' | 'updatedAt'>) => {
     try {
       const updated = await paintingsAPI.update(id, painting);
       setPaintings(prev =>
-        prev.map(p => (p.id === id ? updated : p))
+        prev.map(p => (p._id === id ? updated : p))
       );
     } catch (err) {
       console.error('Error updating painting:', err);

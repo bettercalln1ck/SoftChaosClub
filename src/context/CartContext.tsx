@@ -5,8 +5,8 @@ import type { Painting, CartItem } from '../types';
 interface CartContextType {
   cart: CartItem[];
   addToCart: (painting: Painting) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
   getItemCount: () => number;
@@ -19,10 +19,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const addToCart = (painting: Painting) => {
     setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === painting.id);
+      const existingItem = prevCart.find(item => item._id === painting._id);
       if (existingItem) {
         return prevCart.map(item =>
-          item.id === painting.id
+          item._id === painting._id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -31,18 +31,18 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
-  const removeFromCart = (id: number) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== id));
+  const removeFromCart = (id: string) => {
+    setCart(prevCart => prevCart.filter(item => item._id !== id));
   };
 
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = (id: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(id);
       return;
     }
     setCart(prevCart =>
       prevCart.map(item =>
-        item.id === id ? { ...item, quantity } : item
+        item._id === id ? { ...item, quantity } : item
       )
     );
   };

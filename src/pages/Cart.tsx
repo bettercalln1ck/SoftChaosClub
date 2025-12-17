@@ -34,13 +34,13 @@ export const Cart: React.FC = () => {
         <div className="cart-layout">
           <div className="cart-items">
             {cart.map(item => (
-              <div key={item.id} className="cart-item">
-                <Link to={`/painting/${item.id}`} className="item-image">
+              <div key={item._id} className="cart-item">
+                <Link to={`/painting/${item._id}`} className="item-image">
                   <img src={item.image} alt={item.title} />
                 </Link>
 
                 <div className="item-details">
-                  <Link to={`/painting/${item.id}`} className="item-title">
+                  <Link to={`/painting/${item._id}`} className="item-title">
                     {item.title}
                   </Link>
                   <p className="item-artist">{item.artist}</p>
@@ -52,7 +52,7 @@ export const Cart: React.FC = () => {
                 <div className="item-actions">
                   <div className="quantity-controls">
                     <button 
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => updateQuantity(item._id, item.quantity - 1)}
                       className="quantity-btn"
                       aria-label="Decrease quantity"
                     >
@@ -60,7 +60,7 @@ export const Cart: React.FC = () => {
                     </button>
                     <span className="quantity">{item.quantity}</span>
                     <button 
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item._id, item.quantity + 1)}
                       className="quantity-btn"
                       aria-label="Increase quantity"
                     >
@@ -73,7 +73,7 @@ export const Cart: React.FC = () => {
                   </div>
 
                   <button 
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item._id)}
                     className="remove-btn"
                     aria-label="Remove item"
                   >

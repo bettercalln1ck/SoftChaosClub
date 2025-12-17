@@ -22,7 +22,7 @@ export const Home: React.FC = () => {
           
           <div className="paintings-grid">
             {featuredPaintings.map(painting => (
-              <PaintingCard key={painting.id} painting={painting} />
+              <PaintingCard key={painting._id} painting={painting} />
             ))}
           </div>
 

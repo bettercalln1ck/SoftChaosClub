@@ -2,7 +2,7 @@ import type { Painting } from '../types';
 
 export const paintings: Painting[] = [
   {
-    id: 1,
+    _id: '1',
     title: "Sunset Dreams",
     artist: "Elena Martinez",
     price: 2500,
@@ -14,7 +14,7 @@ export const paintings: Painting[] = [
     category: 'abstract'
   },
   {
-    id: 2,
+    _id: '2',
     title: "Mountain Majesty",
     artist: "David Chen",
     price: 3200,
@@ -26,7 +26,7 @@ export const paintings: Painting[] = [
     category: 'landscape'
   },
   {
-    id: 3,
+    _id: '3',
     title: "Urban Poetry",
     artist: "Sarah Johnson",
     price: 1800,
@@ -38,7 +38,7 @@ export const paintings: Painting[] = [
     category: 'modern'
   },
   {
-    id: 4,
+    _id: '4',
     title: "Serene Waters",
     artist: "Michael O'Brien",
     price: 2800,
@@ -50,7 +50,7 @@ export const paintings: Painting[] = [
     category: 'landscape'
   },
   {
-    id: 5,
+    _id: '5',
     title: "Contemplation",
     artist: "Isabella Rossi",
     price: 4500,
@@ -62,7 +62,7 @@ export const paintings: Painting[] = [
     category: 'portrait'
   },
   {
-    id: 6,
+    _id: '6',
     title: "Golden Hour",
     artist: "James Anderson",
     price: 2200,
@@ -74,7 +74,7 @@ export const paintings: Painting[] = [
     category: 'landscape'
   },
   {
-    id: 7,
+    _id: '7',
     title: "Chaos Theory",
     artist: "Alexandra Kim",
     price: 3500,
@@ -86,7 +86,7 @@ export const paintings: Painting[] = [
     category: 'abstract'
   },
   {
-    id: 8,
+    _id: '8',
     title: "Classical Beauty",
     artist: "Thomas Wellington",
     price: 5200,
@@ -98,7 +98,7 @@ export const paintings: Painting[] = [
     category: 'classical'
   },
   {
-    id: 9,
+    _id: '9',
     title: "Cosmic Dance",
     artist: "Elena Martinez",
     price: 2900,
@@ -110,7 +110,7 @@ export const paintings: Painting[] = [
     category: 'abstract'
   },
   {
-    id: 10,
+    _id: '10',
     title: "Forest Whispers",
     artist: "David Chen",
     price: 2600,
@@ -122,7 +122,7 @@ export const paintings: Painting[] = [
     category: 'landscape'
   },
   {
-    id: 11,
+    _id: '11',
     title: "Metropolitan",
     artist: "Sarah Johnson",
     price: 3800,
@@ -134,7 +134,7 @@ export const paintings: Painting[] = [
     category: 'modern'
   },
   {
-    id: 12,
+    _id: '12',
     title: "Autumn Reverie",
     artist: "Michael O'Brien",
     price: 2400,
