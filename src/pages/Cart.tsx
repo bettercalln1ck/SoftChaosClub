@@ -1,12 +1,125 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useUserAuth } from '../context/UserAuthContext';
 import './Cart.css';
 
+// Extend Window interface for Razorpay
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 export const Cart: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, getTotalPrice, clearCart } = useCart();
   const { isLoggedIn, user } = useUserAuth();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handlePayment = async () => {
+    if (!isLoggedIn || !user) {
+      alert('Please login to proceed with checkout');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const totalAmount = getTotalPrice();
+
+      // Create order on backend
+      const response = await fetch('http://localhost:5000/api/payment/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: totalAmount,
+          currency: 'INR',
+          receipt: `order_${Date.now()}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to create order');
+      }
+
+      // Initialize Razorpay payment
+      const options = {
+        key: data.key_id,
+        amount: data.order.amount,
+        currency: data.order.currency,
+        name: 'Soft Chaos Club',
+        description: 'Art Purchase',
+        order_id: data.order.id,
+        prefill: {
+          name: user.name,
+          email: user.email,
+          contact: user.phone || '',
+        },
+        theme: {
+          color: '#2c3e50',
+        },
+        handler: async function (response: any) {
+          try {
+            // Verify payment on backend
+            const verifyResponse = await fetch('http://localhost:5000/api/payment/verify', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                orderDetails: {
+                  items: cart,
+                  totalAmount,
+                  userId: user._id || user.id,
+                  userEmail: user.email,
+                  userName: user.name,
+                },
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.success) {
+              alert('Payment successful! Your order has been placed.');
+              clearCart();
+              // You can redirect to order confirmation page here
+              // window.location.href = '/orders';
+            } else {
+              alert('Payment verification failed. Please contact support.');
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            alert('Payment verification failed. Please contact support.');
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+            console.log('Payment cancelled by user');
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Failed to initiate payment. Please try again.');
+      setIsProcessing(false);
+    }
+  };
 
   if (cart.length === 0) {
     return (
@@ -105,8 +218,12 @@ export const Cart: React.FC = () => {
             </div>
 
             {isLoggedIn ? (
-              <button className="checkout-btn">
-                Proceed to Checkout
+              <button 
+                className="checkout-btn" 
+                onClick={handlePayment}
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Processing...' : 'Proceed to Checkout'}
               </button>
             ) : (
               <Link to="/login" state={{ from: { pathname: '/cart' } }} className="checkout-btn login-checkout">
