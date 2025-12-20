@@ -35,6 +35,12 @@ export const Hero: React.FC = () => {
         <div className="sparkle sparkle-6"></div>
         <div className="sparkle sparkle-7"></div>
         <div className="sparkle sparkle-8"></div>
+        <div className="star-sparkle star-1"></div>
+        <div className="star-sparkle star-2"></div>
+        <div className="star-sparkle star-3"></div>
+        <div className="star-sparkle star-4"></div>
+        <div className="star-sparkle star-5"></div>
+        <div className="star-sparkle star-6"></div>
       </div>
     </section>
   );
