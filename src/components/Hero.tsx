@@ -27,6 +27,14 @@ export const Hero: React.FC = () => {
         <div className="decoration-circle circle-1"></div>
         <div className="decoration-circle circle-2"></div>
         <div className="decoration-circle circle-3"></div>
+        <div className="sparkle sparkle-1"></div>
+        <div className="sparkle sparkle-2"></div>
+        <div className="sparkle sparkle-3"></div>
+        <div className="sparkle sparkle-4"></div>
+        <div className="sparkle sparkle-5"></div>
+        <div className="sparkle sparkle-6"></div>
+        <div className="sparkle sparkle-7"></div>
+        <div className="sparkle sparkle-8"></div>
       </div>
     </section>
   );
