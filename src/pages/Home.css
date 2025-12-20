@@ -78,6 +78,7 @@
 .view-all-btn {
   padding: 1rem 3rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-size: 200% auto;
   color: white;
   text-decoration: none;
   font-weight: 600;
@@ -85,11 +86,44 @@
   border-radius: 50px;
   transition: all 0.3s ease;
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: buttonShimmer 5s linear infinite;
+}
+
+.view-all-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: rotate(45deg);
+  animation: slideShine 3s infinite;
+}
+
+@keyframes slideShine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes buttonShimmer {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
 
 .view-all-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5), 0 0 20px rgba(102, 126, 234, 0.3);
 }
 
 .about-section {
