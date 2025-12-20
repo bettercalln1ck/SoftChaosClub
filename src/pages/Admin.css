@@ -285,6 +285,23 @@
   gap: 0.8rem;
 }
 
+.btn-edit {
+  padding: 0.7rem 1.5rem;
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 2px solid #bae6fd;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+  background: #bae6fd;
+  border-color: #0369a1;
+  transform: translateY(-2px);
+}
+
 .btn-delete {
   padding: 0.7rem 1.5rem;
   background: #fee;

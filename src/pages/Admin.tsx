@@ -9,9 +9,13 @@ import './Admin.css';
 export const Admin: React.FC = () => {
   const { isAdmin, logout } = useAuth();
   const { user: dbUser } = useUserAuth();
-  const { paintings, addPainting, deletePainting } = usePaintings();
+  const { paintings, addPainting, deletePainting, updatePainting } = usePaintings();
   const navigate = useNavigate();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     artist: '',
@@ -72,35 +76,134 @@ export const Admin: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Image size should be less than 10MB');
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file');
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const uploadImage = async (): Promise<string> => {
+    if (!imageFile) return formData.image;
+
+    setUploading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const formDataToSend = new FormData();
+      formDataToSend.append('image', imageFile);
+
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/upload/image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Upload failed');
+      }
+
+      return data.url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw new Error('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      artist: '',
+      price: '',
+      image: '',
+      description: '',
+      dimensions: '',
+      medium: '',
+      year: new Date().getFullYear().toString(),
+      category: 'abstract',
+    });
+    setImageFile(null);
+    setImagePreview('');
+    setEditingId(null);
+  };
+
+  const handleEdit = (painting: Painting) => {
+    setEditingId(painting._id);
+    setFormData({
+      title: painting.title,
+      artist: painting.artist,
+      price: painting.price.toString(),
+      image: painting.image,
+      description: painting.description,
+      dimensions: painting.dimensions,
+      medium: painting.medium,
+      year: painting.year.toString(),
+      category: painting.category,
+    });
+    setImagePreview(painting.image);
+    setShowAddForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUploading(true);
+    
     try {
-      await addPainting({
+      let imageUrl = formData.image;
+      
+      // Upload new image if selected
+      if (imageFile) {
+        imageUrl = await uploadImage();
+      }
+
+      const paintingData = {
         title: formData.title,
         artist: formData.artist,
         price: Number(formData.price),
-        image: formData.image,
+        image: imageUrl,
         description: formData.description,
         dimensions: formData.dimensions,
         medium: formData.medium,
         year: Number(formData.year),
         category: formData.category,
-      });
-      setFormData({
-        title: '',
-        artist: '',
-        price: '',
-        image: '',
-        description: '',
-        dimensions: '',
-        medium: '',
-        year: new Date().getFullYear().toString(),
-        category: 'abstract',
-      });
+      };
+
+      if (editingId) {
+        await updatePainting(editingId, paintingData);
+        alert('Painting updated successfully!');
+      } else {
+        await addPainting(paintingData);
+        alert('Painting added successfully!');
+      }
+      
+      resetForm();
       setShowAddForm(false);
     } catch (error) {
-      alert('Failed to add painting. Please try again.');
+      console.error('Submit error:', error);
+      alert(editingId ? 'Failed to update painting.' : 'Failed to add painting.');
+    } finally {
+      setUploading(false);
     }
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    setShowAddForm(false);
   };
 
   const handleDelete = async (id: string, title: string) => {
@@ -161,7 +264,7 @@ export const Admin: React.FC = () => {
 
         {showAddForm && (
           <div className="add-form-card">
-            <h3>Add New Painting</h3>
+            <h3>{editingId ? 'Edit Painting' : 'Add New Painting'}</h3>
             <form onSubmit={handleSubmit} className="painting-form">
               <div className="form-row">
                 <div className="form-group">
@@ -220,15 +323,36 @@ export const Admin: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="image">Image URL *</label>
+                <label htmlFor="image">Image *</label>
+                <div style={{ marginBottom: '10px' }}>
+                  <input
+                    type="file"
+                    id="imageFile"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ marginBottom: '10px' }}
+                  />
+                  <small style={{ display: 'block', color: '#666', marginBottom: '10px' }}>
+                    Upload an image (max 10MB) or enter URL below
+                  </small>
+                </div>
+                {imagePreview && (
+                  <div style={{ marginBottom: '10px' }}>
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px' }}
+                    />
+                  </div>
+                )}
                 <input
                   type="url"
                   id="image"
                   name="image"
                   value={formData.image}
                   onChange={handleInputChange}
-                  placeholder="https://images.unsplash.com/..."
-                  required
+                  placeholder="Or paste image URL here..."
+                  required={!imageFile}
                 />
               </div>
 
@@ -284,9 +408,16 @@ export const Admin: React.FC = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn-submit">
-                Add Painting
-              </button>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" className="btn-submit" disabled={uploading}>
+                  {uploading ? 'Uploading...' : (editingId ? 'Update Painting' : 'Add Painting')}
+                </button>
+                {editingId && (
+                  <button type="button" onClick={handleCancel} className="btn-secondary">
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         )}
@@ -309,6 +440,12 @@ export const Admin: React.FC = () => {
                 </p>
               </div>
               <div className="painting-actions">
+                <button
+                  onClick={() => handleEdit(painting)}
+                  className="btn-edit"
+                >
+                  ✏️ Edit
+                </button>
                 <button
                   onClick={() => handleDelete(painting._id, painting.title)}
                   className="btn-delete"
