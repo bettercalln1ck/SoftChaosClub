@@ -255,7 +255,15 @@ export const Admin: React.FC = () => {
         <div className="admin-toolbar">
           <h2>Manage Paintings</h2>
           <button 
-            onClick={() => setShowAddForm(!showAddForm)} 
+            onClick={() => {
+              if (showAddForm) {
+                resetForm();
+                setShowAddForm(false);
+              } else {
+                resetForm();
+                setShowAddForm(true);
+              }
+            }} 
             className="btn-add"
           >
             {showAddForm ? '✕ Cancel' : '+ Add New Painting'}

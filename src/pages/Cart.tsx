@@ -45,6 +45,12 @@ export const Cart: React.FC = () => {
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Payment error:', errorData);
+        throw new Error(errorData.message || 'Failed to create order');
+      }
+
       const data = await response.json();
 
       if (!data.success) {
@@ -119,7 +125,8 @@ export const Cart: React.FC = () => {
       razorpay.open();
     } catch (error) {
       console.error('Payment error:', error);
-      alert('Failed to initiate payment. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Failed to initiate payment: ${errorMessage}\n\nPlease check:\n1. Backend server is running\n2. You are logged in\n3. MongoDB is connected`);
       setIsProcessing(false);
     }
   };
