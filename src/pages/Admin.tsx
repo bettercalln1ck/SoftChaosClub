@@ -97,12 +97,20 @@ export const Admin: React.FC = () => {
 
     setUploading(true);
     try {
-      const token = localStorage.getItem('token');
+      // Get token from apiUser object
+      const apiUser = localStorage.getItem('apiUser');
+      if (!apiUser) {
+        throw new Error('Not authenticated. Please login again.');
+      }
+      const token = JSON.parse(apiUser).token;
+      if (!token) {
+        throw new Error('Authentication token not found. Please login again.');
+      }
+      
       const formDataToSend = new FormData();
       formDataToSend.append('image', imageFile);
 
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_URL}/upload/image`, {
+      const response = await fetch(`http://localhost:5000/api/upload/image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

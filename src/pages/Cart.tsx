@@ -28,7 +28,19 @@ export const Cart: React.FC = () => {
     setIsProcessing(true);
 
     try {
-      const token = localStorage.getItem('token');
+      // Get token from apiUser object
+      const apiUser = localStorage.getItem('apiUser');
+      if (!apiUser) {
+        alert('Please login to proceed with checkout');
+        setIsProcessing(false);
+        return;
+      }
+      const token = JSON.parse(apiUser).token;
+      if (!token) {
+        alert('Authentication token not found. Please login again.');
+        setIsProcessing(false);
+        return;
+      }
       const totalAmount = getTotalPrice();
 
       // Create order on backend
