@@ -203,7 +203,8 @@ export const Admin: React.FC = () => {
       setShowAddForm(false);
     } catch (error) {
       console.error('Submit error:', error);
-      alert(editingId ? 'Failed to update painting.' : 'Failed to add painting.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`${editingId ? 'Failed to update painting' : 'Failed to add painting'}.\n\nError: ${errorMessage}\n\nCheck:\n1. Backend server running?\n2. Logged in as admin?\n3. MongoDB connected?\n4. Browser console for details`);
     } finally {
       setUploading(false);
     }
