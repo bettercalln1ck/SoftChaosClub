@@ -110,13 +110,20 @@ export const Admin: React.FC = () => {
       const formDataToSend = new FormData();
       formDataToSend.append('image', imageFile);
 
-      const response = await fetch(`http://localhost:5000/api/upload/image`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/upload/image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
         body: formDataToSend,
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Upload response error:', errorText);
+        throw new Error(`Upload failed: ${response.status} - ${errorText}`);
+      }
 
       const data = await response.json();
       if (!data.success) {
@@ -126,7 +133,8 @@ export const Admin: React.FC = () => {
       return data.url;
     } catch (error) {
       console.error('Upload error:', error);
-      throw new Error('Failed to upload image');
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to upload image: ${errorMsg}`);
     } finally {
       setUploading(false);
     }
@@ -350,7 +358,7 @@ export const Admin: React.FC = () => {
                     style={{ marginBottom: '10px' }}
                   />
                   <small style={{ display: 'block', color: '#666', marginBottom: '10px' }}>
-                    Upload an image (max 10MB) or enter URL below
+                    Upload an image (max 10MB) or enter URL below. If uploading, make sure Cloudinary is configured.
                   </small>
                 </div>
                 {imagePreview && (
@@ -368,8 +376,8 @@ export const Admin: React.FC = () => {
                   name="image"
                   value={formData.image}
                   onChange={handleInputChange}
-                  placeholder="Or paste image URL here..."
-                  required={!imageFile}
+                  placeholder="Or paste image URL here (skip file upload if using URL)..."
+                  required={!imageFile && !imagePreview}
                 />
               </div>
 
