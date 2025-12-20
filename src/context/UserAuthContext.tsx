@@ -8,6 +8,7 @@ export interface User {
   name: string;
   createdAt: string;
   isAdmin?: boolean;
+  phone?: string;
 }
 
 interface UserAuthContextType {

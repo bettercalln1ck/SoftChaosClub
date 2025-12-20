@@ -4,6 +4,9 @@ import { useCart } from '../context/CartContext';
 import { useUserAuth } from '../context/UserAuthContext';
 import './Cart.css';
 
+// API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 // Extend Window interface for Razorpay
 declare global {
   interface Window {
@@ -29,7 +32,7 @@ export const Cart: React.FC = () => {
       const totalAmount = getTotalPrice();
 
       // Create order on backend
-      const response = await fetch('http://localhost:5000/api/payment/create-order', {
+      const response = await fetch(`${API_URL}/payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +70,7 @@ export const Cart: React.FC = () => {
         handler: async function (response: any) {
           try {
             // Verify payment on backend
-            const verifyResponse = await fetch('http://localhost:5000/api/payment/verify', {
+            const verifyResponse = await fetch(`${API_URL}/payment/verify`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -80,7 +83,7 @@ export const Cart: React.FC = () => {
                 orderDetails: {
                   items: cart,
                   totalAmount,
-                  userId: user._id || user.id,
+                  userId: user.id,
                   userEmail: user.email,
                   userName: user.name,
                 },
