@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
-const auth = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 
 // Initialize Razorpay instance
 const razorpay = new Razorpay({
@@ -13,7 +13,7 @@ const razorpay = new Razorpay({
 // @route   POST api/payment/create-order
 // @desc    Create Razorpay order
 // @access  Private
-router.post('/create-order', auth, async (req, res) => {
+router.post('/create-order', protect, async (req, res) => {
   try {
     const { amount, currency = 'INR', receipt } = req.body;
 
@@ -49,7 +49,7 @@ router.post('/create-order', auth, async (req, res) => {
 // @route   POST api/payment/verify
 // @desc    Verify Razorpay payment
 // @access  Private
-router.post('/verify', auth, async (req, res) => {
+router.post('/verify', protect, async (req, res) => {
   try {
     const {
       razorpay_order_id,
@@ -103,7 +103,7 @@ router.post('/verify', auth, async (req, res) => {
 // @route   GET api/payment/status/:paymentId
 // @desc    Get payment status
 // @access  Private
-router.get('/status/:paymentId', auth, async (req, res) => {
+router.get('/status/:paymentId', protect, async (req, res) => {
   try {
     const payment = await razorpay.payments.fetch(req.params.paymentId);
     res.json({
